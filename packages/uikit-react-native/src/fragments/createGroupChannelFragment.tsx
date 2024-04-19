@@ -38,7 +38,6 @@ const createGroupChannelFragment = (initModule?: Partial<GroupChannelModule>): G
     searchItem,
     renderNewMessagesButton = (props) => <NewMessagesButton {...props} />,
     renderScrollToBottomButton = (props) => <ScrollToBottomButton {...props} />,
-    renderMessage,
     enableMessageGrouping = true,
     enableTypingIndicator,
     onPressHeaderLeft = NOOP,
@@ -128,10 +127,9 @@ const createGroupChannelFragment = (initModule?: Partial<GroupChannelModule>): G
     }, []);
 
     const renderItem: GroupChannelProps['MessageList']['renderMessage'] = useFreshCallback((props) => {
-      const content = renderMessage ? renderMessage(props) : <GroupChannelMessageRenderer {...props} />;
       return (
         <Box>
-          {content}
+          <GroupChannelMessageRenderer {...props} />
           {props.isFirstItem && !hasNext() && <GroupChannelTypingIndicatorBubble />}
         </Box>
       );
@@ -183,6 +181,7 @@ const createGroupChannelFragment = (initModule?: Partial<GroupChannelModule>): G
         onSent(message);
       },
     );
+
     const onPressUpdateUserMessage: GroupChannelProps['Input']['onPressUpdateUserMessage'] = useFreshCallback(
       async (message, params) => {
         const processedParams = await onBeforeUpdateUserMessage(params);

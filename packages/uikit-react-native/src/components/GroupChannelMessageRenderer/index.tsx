@@ -12,6 +12,7 @@ import {
   SendbirdAdminMessage,
   SendbirdFileMessage,
   SendbirdMessage,
+  SendbirdMultipleFilesMessage,
   SendbirdUserMessage,
   calcMessageGrouping,
   getMessageType,
@@ -268,6 +269,11 @@ const GroupChannelMessageRenderer: GroupChannelProps['Fragment']['renderMessage'
             }}
             {...messageProps}
           />
+        );
+      }
+      case 'multipleFiles': {
+        return (
+          <GroupChannelMessage.MultipleImageFile message={message as SendbirdMultipleFilesMessage} {...messageProps} />
         );
       }
       case 'unknown':

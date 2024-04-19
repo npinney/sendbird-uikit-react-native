@@ -159,6 +159,7 @@ export type MessageType =
   | 'user'
   | 'admin'
   | 'file'
+  | 'multipleFiles'
   | 'unknown'
   | `user.${'opengraph'}`
   | `file.${'image' | 'video' | 'audio' | 'voice'}`;
@@ -238,6 +239,10 @@ export function getMessageType(message: SendbirdMessage): MessageType {
         return 'file';
       }
     }
+  }
+
+  if (message.isMultipleFilesMessage()) {
+    return 'multipleFiles';
   }
 
   return 'unknown';

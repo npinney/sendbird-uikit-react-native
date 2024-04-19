@@ -1,9 +1,11 @@
+import { SendableMessage } from '@sendbird/chat/lib/__definition';
+import { MultipleFilesMessageCreateParams } from '@sendbird/chat/message';
 import { BottomSheetItem, useAlert, useToast } from '@sendbird/uikit-react-native-foundation';
 import { SendbirdChannel, isImage, shouldCompressImage, useIIFE } from '@sendbird/uikit-utils';
 
 import SBUError from '../libs/SBUError';
 import SBUUtils from '../libs/SBUUtils';
-import { FileType } from '../platform/types';
+import { FilePickerResponse, FileType } from '../platform/types';
 import { useLocalization, usePlatformService, useSendbirdChat } from './useContext';
 
 export const useChannelInputItems = (channel: SendbirdChannel, sendFileMessage: (file: FileType) => void) => {
@@ -128,7 +130,7 @@ export const useChannelInputItems = (channel: SendbirdChannel, sendFileMessage: 
       icon: 'photo',
       onPress: async () => {
         const mediaFiles = await fileService.openMediaLibrary({
-          selectionLimit: 1,
+          selectionLimit: 4,
           mediaType,
           onOpenFailure: (error) => {
             if (error.code === SBUError.CODE.ERR_PERMISSIONS_DENIED) {
@@ -146,8 +148,8 @@ export const useChannelInputItems = (channel: SendbirdChannel, sendFileMessage: 
           },
         });
 
-        if (mediaFiles && mediaFiles[0]) {
-          const mediaFile = mediaFiles[0];
+        if (mediaFiles && mediaFiles.length === 1) {
+          const mediaFile = mediaFiles[0]!;
 
           // Image compression
           if (
@@ -170,6 +172,30 @@ export const useChannelInputItems = (channel: SendbirdChannel, sendFileMessage: 
           }
 
           sendFileMessage(mediaFile);
+        } else if (mediaFiles && mediaFiles.length > 1) {
+          const multipleFilesMessageParams: MultipleFilesMessageCreateParams = {
+            data: 'Will I persist or be lost to the multiverse??',
+            fileInfoList: mediaFiles.map((asset: FilePickerResponse) => ({
+              file: {
+                name: asset!.name,
+                type: asset!.type,
+                uri: asset!.uri,
+              },
+            })),
+          };
+
+          channel
+            .sendMultipleFilesMessage(multipleFilesMessageParams)
+            .onPending((message: SendableMessage) => {
+              if (message.isMultipleFilesMessage()) {
+                console.log('Data while message is sending:', message.data);
+              }
+            })
+            .onSucceeded((message: SendableMessage) => {
+              if (message.isMultipleFilesMessage()) {
+                console.log('Data once message has successfully sent:', message.data);
+              }
+            });
         }
       },
     });

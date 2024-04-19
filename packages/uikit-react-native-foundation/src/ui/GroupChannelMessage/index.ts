@@ -11,6 +11,7 @@ import type { VoiceFileMessageState } from './Message.file.voice';
 import UnknownMessage from './Message.unknown';
 import UserMessage from './Message.user';
 import OpenGraphUser from './Message.user.og';
+import ImageMultipleFilesMessage from './Message.multipleFile.image';
 
 export type GroupChannelMessageProps<T extends SendbirdMessage, AdditionalProps = unknown> = {
   channel: SendbirdGroupChannel;
@@ -49,6 +50,7 @@ const GroupChannelMessage = {
   ImageFile: ImageFileMessage,
   VideoFile: VideoFileMessage,
   VoiceFile: VoiceFileMessage,
+  MultipleImageFile: ImageMultipleFilesMessage,
   Admin: AdminMessage,
   Unknown: UnknownMessage,
 };
